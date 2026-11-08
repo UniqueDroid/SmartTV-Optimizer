@@ -1,10 +1,11 @@
-# Batch 3 – NUR nach deiner Freigabe (nicht Gewünschtes auskommentieren)
-# Genutzt & geschützt: waipu.tv, YouTube, Netflix, Prime Video, Disney+, Twitch
-com.google.android.videos           # Google TV Filme & Serien
-com.google.android.music
-com.google.android.youtube.tvmusic  # YouTube Music
+# Batch 3 – ungenutzte Apps  [Hersteller-Apps nach Rücksprache] – nicht Gewünschtes auskommentieren
+# Genutzt & geschützt: waipu.tv, YouTube, Netflix, Prime Video, Disney+, Twitch, Chromecast
+com.google.android.videos                 # Google TV Filme & Serien
+com.google.android.music                  # Google Play Musik (eingestellt)
+com.google.android.youtube.tvmusic        # YouTube Music
 com.google.android.play.games
-org.droidtv.dlna                    # Medien vom Netzwerk abspielen
-com.phorus.playfi.softap            # DTS Play-Fi
-org.droidtv.amazonalexa             # Alexa-Integration
-# com.google.android.katniss        # Google Assistant / Sprachsuche – offen
+com.phorus.playfi.softap                  # DTS Play-Fi Access Point (playfi.tv bleibt, schaltet sich sonst eh wieder ein)
+# org.droidtv.dlna                        # Medien aus dem Heimnetz; auf manchen TPM191E bindet "Media" daran → bleibt an
+# org.droidtv.amazonalexa                 # Alexa (u. a. Ein/Aus per Alexa) – offen
+# com.google.android.marvin.talkback      # Screenreader
+# com.google.android.katniss              # Google Assistant / Mikrofon-Taste – offen

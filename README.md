@@ -2,27 +2,40 @@
 
 Vorsichtiges, vollständig reversibles Debloating von Android-TV-/Google-TV-Geräten per ADB – ohne Root.
 
-## Grundregeln
-1. **Nie `pm uninstall`** – ausschließlich `pm disable-user --user 0 <paket>`.
-2. **Backup first** – vor jeder Änderung Paketlisten sichern; jedes deaktivierte Paket wird als `pm enable`-Zeile in `rollback.sh` protokolliert.
-3. **Whitelist** – Core-Dienste (GMS, Provider, Play Store), Bluetooth/WLAN/Fernbedienung, HALs, HDMI/CEC, Tuner, Settings, Tastatur und genutzte Apps werden von den Skripten automatisch übersprungen.
-4. **Launcher** – Stock-Launcher erst deaktivieren, wenn ein Ersatz (z. B. Projectivy) installiert, getestet und Standard ist.
-5. **Kleine Batches** – nach jedem Batch Neustart und Funktionstest.
+## Grundregeln (von den Skripten erzwungen)
+1. **Nichts wird deinstalliert.** Einziger ändernder Befehl: `pm disable-user --user 0 <paket>`. Rückweg: `pm enable --user 0 <paket>`. Kein `uninstall`, `clear`, `hide` – ein Test prüft das.
+2. **Backup first.** Ohne Backup verweigert `01_disable_batch.sh` den Start. Das Backup erzeugt zusätzlich `restore_from_backup.sh`, das alles einschaltet, was beim Backup an war (ab Werk Deaktiviertes bleibt aus).
+3. **Rückweg vor Änderung.** Jede Rollback-Zeile wird geschrieben, *bevor* das Paket deaktiviert wird (pro Batch + gesamt).
+4. **Harte Whitelist** (`whitelist_hard.regex`): Android-Kern (`android`, `com.android.*`), GMS/Play Store, MediaTek-Middleware, Launcher, Setup, Tastatur, Bluetooth/WLAN/Fernbedienung, HDMI/CEC, Quellen-Menü (`org.droidtv.channels`, `eum`, `fastip`, `philipstvdrawer`), Firmware-Updates, Chromecast und alle genutzten Apps. Steht so ein Paket in einer Batch-Liste, wird der **ganze Batch abgebrochen**.
+5. **Automatische Bootschutz-Prüfungen pro Paket:** übersprungen werden Pakete, die einen TV-Eingang bereitstellen (TvInputService), HOME-Handler sind oder als `PERSISTENT` laufen (Bootschleifen-Risiko).
+6. **Tuner** nur über `batch5_tuner.txt` *und* `ALLOW_TUNER=1`. **Batch 4** nur, wenn ein Ersatz-Launcher HOME ist und der Stock-Launcher bereits aus ist.
+7. **Kleine Batches + Neustart-Check.** `02_reboot_check.sh` startet neu, wartet auf den Boot und prüft HOME, HDMI-Eingänge, waipu.tv und Whitelist. Bootet der TV nicht fertig, wird der letzte Batch **automatisch zurückgerollt**.
 
 ## Geräte
 | Gerät | Plattform | Ordner |
 |---|---|---|
 | Philips 50PUS7354/12 | TPM191E, Android TV 12 | [`devices/philips-50PUS7354`](devices/philips-50PUS7354) |
 
-## Benutzung (Beispiel Philips)
+## Ablauf (Philips)
 ```bash
 cd devices/philips-50PUS7354
-./00_backup.sh 192.168.1.50                       # Paketlisten sichern
-./01_disable_batch.sh batches/batch1_telemetrie.txt
-adb reboot                                        # testen!
-./rollback.sh                                     # bei Problemen alles zurück
+./00_backup.sh 192.168.1.50                                   # ändert nichts
+./01_disable_batch.sh 192.168.1.50 batches/batch1_telemetrie.txt
+./02_reboot_check.sh 192.168.1.50                             # Neustart + Prüfung
+# bei Problemen:
+./state/rollback_batch1_telemetrie.sh 192.168.1.50            # nur dieser Batch
+./state/rollback_all.sh 192.168.1.50                          # alles von uns Deaktivierte
+./state/LATEST/restore_from_backup.sh 192.168.1.50            # Zustand laut Backup
 ```
-Bash unter Linux, macOS oder WSL; `adb` muss im PATH liegen.
+Bash unter Linux, macOS oder WSL; `adb` im PATH. Die Ordner unter `state/` (Backups, Rollbacks) mit einchecken.
+
+## Notfall
+- **TV startet, aber etwas fehlt:** passendes Rollback-Skript ausführen.
+- **TV bootet nicht fertig, ADB erreichbar:** `02_reboot_check.sh` rollt automatisch zurück; sonst Rollback-Skript manuell.
+- **TV bootet nicht und ADB ist nicht erreichbar:** Netzwerk-ADB braucht ein laufendes System. Letzter Rückweg ist ein Werksreset (über das Menü oder den Recovery-Modus laut Philips-Support). Der Reset hebt alle `disable-user`-Änderungen auf, weil nichts deinstalliert wurde – Einstellungen und Logins gehen dabei aber verloren. Genau deshalb: kleine Batches, nur getestete Pakete, Neustart nach jedem Batch.
+
+## Tests
+`tests/run_tests.sh` prüft die Skripte offline gegen eine simulierte `adb` (Backup-Pflicht, Whitelist, Tuner-/Launcher-Sperren, Rollback, Stopp bei Fehlern, automatischer Rollback bei Bootschleife, keine verbotenen Befehle).
 
 ## Dokumentation
 - [Optimierungsplan Philips 50PUS7354](docs/optimierungsplan-philips-50PUS7354.md)

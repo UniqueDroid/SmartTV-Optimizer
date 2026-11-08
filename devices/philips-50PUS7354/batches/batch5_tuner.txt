@@ -1,0 +1,10 @@
+# Batch 5 – Antennen-/Kabel-/Sat-Tuner  [Kritisch – nur mit ALLOW_TUNER=1]
+# Für reine Streaming-Nutzung (waipu.tv) ohne Antenne. Laut cleanyourtv (TPM191E) beseitigt das die
+# "Kein Signal"-Falle beim Einschalten und auf der TV-Taste; HDMI-Umschaltung läuft über
+# org.droidtv.channels und bleibt. Evidenz: EIN Tester – deshalb als letzter Schritt, einzeln, mit Neustart-Check.
+# Danach gehen Live-TV per Antenne, Sendersuche und Videotext nicht mehr (Rückweg: rollback_batch5_tuner.sh).
+# Reihenfolge: zuerst nur playtv testen, die Installer erst danach.
+org.droidtv.playtv                        # Live-TV/Tuner-Oberfläche
+# org.droidtv.euinstallertc               # DVB-T/C-Sendersuche
+# org.droidtv.euinstallersat              # DVB-S-Sendersuche
+# org.droidtv.teletext                    # Videotext

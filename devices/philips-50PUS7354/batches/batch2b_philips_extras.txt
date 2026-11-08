@@ -1,0 +1,11 @@
+# Batch 2b – Philips-Extras  [Hersteller-Apps nach Rücksprache]
+# Auf einem 50PUS7354 (gleiche Firmware) durch zwei Neustarts getestet.
+org.droidtv.nettvapps                     # Container der vorinstallierten Web-Apps
+org.droidtv.sticker                       # Werbe-Sticker
+org.droidtv.dropboxprovider
+# Web-App-Kacheln org.droidtv.nettvappNNNN – Nummern nach dem Backup aus original_packages.txt eintragen, z. B.:
+# org.droidtv.nettvapp1814                # ARTE
+# org.droidtv.nettvapp4655                # Deezer
+# org.droidtv.nettvapp5326                # Toon Goggles
+# org.droidtv.nettvapp5512                # Fishing TV
+# org.droidtv.nettvapp20004410            # Couchplay Games

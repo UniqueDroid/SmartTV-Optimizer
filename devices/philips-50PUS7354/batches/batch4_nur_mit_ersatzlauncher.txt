@@ -1,2 +1,5 @@
-# Batch 4 – ERST wenn Projectivy Launcher installiert, getestet und Standard ist!
+# Batch 4 – NUR wenn Ersatz-Launcher HOME ist UND der Stock-Launcher deaktiviert ist.
+# Der Stock-Launcher hängt an diesem Paket; vorher abschalten = Launcher-Absturz/schwarzer Bildschirm.
+# Das Skript verweigert den Batch automatisch, solange das nicht erfüllt ist.
+# Nebenwirkung: Benachrichtigungs-Seitenleiste entfällt.
 com.google.android.tvrecommendations

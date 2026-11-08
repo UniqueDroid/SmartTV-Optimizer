@@ -1,9 +1,11 @@
-# Batch 1 – Telemetrie / Debug / Demo
-org.droidtv.candeebug
-org.droidtv.gel
-org.droidtv.usagelogger
-org.droidtv.demome
-com.google.android.feedback
-com.google.android.partnersetup
-com.google.android.onetimeinitializer
-com.google.android.syncadapters.calendar
+# Batch 1 – Telemetrie / Debug / Demo  [Sicher zu deaktivieren]
+# Quelle: Gathin23/cleanyourtv examples/philips-tpm191e – u. a. auf einem 50PUS7354 (gleiche Firmware
+# STT2.230526.001) und 9 weiteren TPM191E-Geräten über mehrere Neustarts getestet.
+org.droidtv.candeebug                     # Analytics-Uploader
+org.droidtv.gel                           # Metrik-Sammler
+org.droidtv.usagelogger                   # Boot-/Tasten-/Panel-Telemetrie (kann sich beim Boot selbst wieder einschalten – harmlos)
+org.droidtv.demome                        # Händler-Demo-Modus
+com.google.android.feedback               # Market Feedback Agent
+com.google.android.partnersetup           # Partner-Attribution
+com.google.android.onetimeinitializer     # läuft nur bei Ersteinrichtung
+com.google.android.syncadapters.calendar  # Kalender-Sync, keine Kalender-App vorhanden

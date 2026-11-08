@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Simulierte adb für Offline-Tests. Zustand in $FAKE (Verzeichnis).
+F="${FAKE:?}"; echo "$*" >> "$F/calls.log"
+[ "$1" = -s ] && shift 2
+case "$1" in
+  connect) echo "connected"; exit 0;;
+  wait-for-device) exit 0;;
+  get-state) [ -f "$F/offline" ] && exit 1; echo device; exit 0;;
+  reboot) [ -f "$F/bootloop_after_reboot" ] && echo 0 > "$F/boot"; exit 0;;
+  shell) shift;;
+  *) exit 1;;
+esac
+[ -f "$F/offline" ] && exit 1
+cmd="$*"
+case "$cmd" in
+  "getprop sys.boot_completed") cat "$F/boot";;
+  "getprop ro.build.fingerprint") echo "Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys";;
+  getprop) echo "[ro.product.model]: [TPM191E]";;
+  "pm list packages"|"pm list packages -s"|"pm list packages -u") sed 's/^/package:/' "$F/packages.txt";;
+  "pm list packages -3") : ;;
+  "pm list packages -d") sed 's/^/package:/' "$F/disabled.txt";;
+  "pm list packages -e") grep -vxFf "$F/disabled.txt" "$F/packages.txt" | sed 's/^/package:/';;
+  "pm disable-user --user 0 "*) p="${cmd##* }"; grep -qx "$p" "$F/packages.txt" || { echo "Unknown package"; exit 1; }
+     grep -qx "$p" "$F/refuse.txt" 2>/dev/null && { echo "Error: refused"; exit 1; }
+     grep -qx "$p" "$F/disabled.txt" || echo "$p" >> "$F/disabled.txt"; echo "Package $p new state: disabled-user";;
+  "pm enable --user 0 "*) p="${cmd##* }"; grep -vx "$p" "$F/disabled.txt" > "$F/d.tmp" || true; mv "$F/d.tmp" "$F/disabled.txt"; echo "Package $p new state: enabled";;
+  "pm uninstall"*|"pm clear"*|"pm hide"*) echo "VERBOTEN $cmd" >> "$F/forbidden.log"; exit 1;;
+  "pm query-services"*) sed 's#$#/.Svc#' "$F/providers.txt";;
+  "cmd package query-activities"*) sed 's#$#/.Home#' "$F/homes.txt";;
+  "cmd package resolve-activity"*) echo "priority=0"; cat "$F/home_current";;
+  "dumpsys package "*) p="${cmd##* }"; grep -qx "$p" "$F/persistent.txt" 2>/dev/null && echo "    pkgFlags=[ SYSTEM PERSISTENT ]" || echo "    pkgFlags=[ SYSTEM ]";;
+  "dumpsys tv_input") for i in 1 2 3 4; do echo "  HDMI$i inputId=x/HW$i"; done;;
+  "settings list"*) echo "a=1";;
+  "logcat"*) : ;;
+  *) echo "FAKE: unbekannt: $cmd" >&2;;
+esac

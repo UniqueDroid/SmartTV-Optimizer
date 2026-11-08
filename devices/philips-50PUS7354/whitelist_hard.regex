@@ -1,0 +1,12 @@
+^android$
+^android\.ext\.
+^com\.android\.
+^com\.google\.android\.(gms|gsf|ext\.|overlay\.modules|modulemetadata|packageinstaller|permissioncontroller|webview|trichromelibrary|configupdater|tvlauncher|apps\.tv\.launcherx|tungsten|tvsetup|setupwraith|tv\.remote|leanbackime|inputmethod|tts|apps\.mediashell|youtube\.tv$)
+^com\.mediatek\.
+^org\.droidtv\.(tvserver|channels|eum|fastip|philipstvdrawer|nettvbrowser|menudataapp|nettvregistration|tvsystemui|icp|oad|settings|tv\.|nettv_launcherapp|ambi|hue|cec|hdmi|input)
+^com\.easy\.oad$
+^com\.vewd\.|^com\.seraphic\.
+^com\.phorus\.playfi\.tv$
+^de\.exaring\.|waipu
+^com\.netflix\.|^com\.amazon\.amazonvideo\.|^com\.disney\.|^tv\.twitch\.
+bluetooth|wifi|wlan|remote|keyboard|inputmethod|launcher|setupwraith|hdmi|tvinput|systemui|settings|webview|packageinstaller|permissioncontroller
