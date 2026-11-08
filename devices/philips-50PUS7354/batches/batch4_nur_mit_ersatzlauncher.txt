@@ -1,0 +1,2 @@
+# Batch 4 – ERST wenn Projectivy Launcher installiert, getestet und Standard ist!
+com.google.android.tvrecommendations

@@ -1,0 +1,6 @@
+# Batch 2 – Philips-Werbung / Empfehlungen / App-Gallery
+org.droidtv.nettvrecommender
+org.droidtv.recommendation
+org.droidtv.nettv.market
+# Weitere Kandidaten: org.droidtv.nettvappNNNN (Web-App-Verknüpfungen, z. B. Couchplay, Arte, Deezer)
+# → konkrete Paketnamen nach dem Backup aus original_packages.txt ergänzen

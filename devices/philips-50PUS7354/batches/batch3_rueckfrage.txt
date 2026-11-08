@@ -1,0 +1,10 @@
+# Batch 3 – NUR nach deiner Freigabe (nicht Gewünschtes auskommentieren)
+# Genutzt & geschützt: waipu.tv, YouTube, Netflix, Prime Video, Disney+, Twitch
+com.google.android.videos           # Google TV Filme & Serien
+com.google.android.music
+com.google.android.youtube.tvmusic  # YouTube Music
+com.google.android.play.games
+org.droidtv.dlna                    # Medien vom Netzwerk abspielen
+com.phorus.playfi.softap            # DTS Play-Fi
+org.droidtv.amazonalexa             # Alexa-Integration
+# com.google.android.katniss        # Google Assistant / Sprachsuche – offen

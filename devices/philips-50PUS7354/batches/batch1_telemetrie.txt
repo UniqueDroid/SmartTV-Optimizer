@@ -1,0 +1,9 @@
+# Batch 1 – Telemetrie / Debug / Demo
+org.droidtv.candeebug
+org.droidtv.gel
+org.droidtv.usagelogger
+org.droidtv.demome
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
