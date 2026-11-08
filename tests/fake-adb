@@ -27,7 +27,13 @@ case "$cmd" in
   "pm uninstall"*|"pm clear"*|"pm hide"*) echo "VERBOTEN $cmd" >> "$F/forbidden.log"; exit 1;;
   "pm query-services"*) sed 's#$#/.Svc#' "$F/providers.txt";;
   "cmd package query-activities"*) sed 's#$#/.Home#' "$F/homes.txt";;
-  "cmd package resolve-activity"*) echo "priority=0"; cat "$F/home_current";;
+  "cmd package resolve-activity"*) echo "priority=0"
+     h="$(cut -d/ -f1 "$F/home_current")"
+     if ! grep -qx "$h" "$F/disabled.txt"; then cat "$F/home_current"
+     elif [ -f "$F/refuse_home" ]; then echo "com.android.tv.settings/.FallbackHome"
+     else n="$(grep -vxFf "$F/disabled.txt" "$F/homes.txt" | grep -v '^com.android.tv.settings$' | head -1)"
+          [ -n "$n" ] && echo "$n/.Home" || echo "com.android.tv.settings/.FallbackHome"; fi;;
+  "input keyevent"*) : ;;
   "dumpsys package "*) p="${cmd##* }"; grep -qx "$p" "$F/persistent.txt" 2>/dev/null && echo "    pkgFlags=[ SYSTEM PERSISTENT ]" || echo "    pkgFlags=[ SYSTEM ]";;
   "dumpsys tv_input") for i in 1 2 3 4; do echo "  HDMI$i inputId=x/HW$i"; done;;
   "settings list"*) echo "a=1";;

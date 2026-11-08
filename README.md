@@ -8,8 +8,9 @@ Vorsichtiges, vollständig reversibles Debloating von Android-TV-/Google-TV-Ger�
 3. **Rückweg vor Änderung.** Jede Rollback-Zeile wird geschrieben, *bevor* das Paket deaktiviert wird (pro Batch + gesamt).
 4. **Harte Whitelist** (`whitelist_hard.regex`): Android-Kern (`android`, `com.android.*`), GMS/Play Store, MediaTek-Middleware, Launcher, Setup, Tastatur, Bluetooth/WLAN/Fernbedienung, HDMI/CEC, Quellen-Menü (`org.droidtv.channels`, `eum`, `fastip`, `philipstvdrawer`), Firmware-Updates, Chromecast und alle genutzten Apps. Steht so ein Paket in einer Batch-Liste, wird der **ganze Batch abgebrochen**.
 5. **Automatische Bootschutz-Prüfungen pro Paket:** übersprungen werden Pakete, die einen TV-Eingang bereitstellen (TvInputService), HOME-Handler sind oder als `PERSISTENT` laufen (Bootschleifen-Risiko).
-6. **Tuner** nur über `batch5_tuner.txt` *und* `ALLOW_TUNER=1`. **Batch 4** nur, wenn ein Ersatz-Launcher HOME ist und der Stock-Launcher bereits aus ist.
-7. **Kleine Batches + Neustart-Check.** `02_reboot_check.sh` startet neu, wartet auf den Boot und prüft HOME, HDMI-Eingänge, waipu.tv und Whitelist. Bootet der TV nicht fertig, wird der letzte Batch **automatisch zurückgerollt**.
+6. **Launcher-Wechsel** nur per `03_launcher_wechsel.sh`: Ersatz muss als HOME-Handler gemeldet sein, sonst Abbruch; zeigt HOME danach nicht auf ihn, wird der Stock-Launcher sofort wieder aktiviert.
+7. **Tuner** nur über `batch5_tuner.txt` *und* `ALLOW_TUNER=1`. **Batch 4** nur, wenn ein Ersatz-Launcher HOME ist und der Stock-Launcher bereits aus ist.
+8. **Kleine Batches + Neustart-Check.** `02_reboot_check.sh` startet neu, wartet auf den Boot und prüft HOME, HDMI-Eingänge, waipu.tv und Whitelist. Bootet der TV nicht fertig, wird der letzte Batch **automatisch zurückgerollt**.
 
 ## Geräte
 | Gerät | Plattform | Ordner |
@@ -22,6 +23,7 @@ cd devices/philips-50PUS7354
 ./00_backup.sh 192.168.1.50                                   # ändert nichts
 ./01_disable_batch.sh 192.168.1.50 batches/batch1_telemetrie.txt
 ./02_reboot_check.sh 192.168.1.50                             # Neustart + Prüfung
+./03_launcher_wechsel.sh 192.168.1.50                         # Home-Taste → Projectivy (Stock-Launcher deaktivieren)
 # bei Problemen:
 ./state/rollback_batch1_telemetrie.sh 192.168.1.50            # nur dieser Batch
 ./state/rollback_all.sh 192.168.1.50                          # alles von uns Deaktivierte
@@ -39,4 +41,5 @@ Bash unter Linux, macOS oder WSL; `adb` im PATH. Die Ordner unter `state/` (Back
 
 ## Dokumentation
 - [Optimierungsplan Philips 50PUS7354](docs/optimierungsplan-philips-50PUS7354.md)
+- [Home-Taste öffnet Stock-Launcher](docs/home-taste-launcher.md)
 - [Repo-Recherche Philips TPM191E](docs/repo-recherche-philips-50PUS7354.md)

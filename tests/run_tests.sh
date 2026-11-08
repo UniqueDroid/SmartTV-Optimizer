@@ -101,6 +101,20 @@ grep -qx org.droidtv.nettv.market "$FAKE/disabled.txt" && ko "Batch nicht zurüc
 echo "T10 Normaler Neustart-Check"; setup; run ./00_backup.sh 1.2.3.4; run ./01_disable_batch.sh 1.2.3.4 batches/batch1_telemetrie.txt
 run ./02_reboot_check.sh 1.2.3.4; grep -q "^OK" "$W/out.txt" && ok "Check OK" || { ko "Check fehlgeschlagen"; tail -8 "$W/out.txt"; }
 
+echo "T12 Launcher-Wechsel ohne HOME-fähigen Ersatz wird verweigert"; setup; run ./00_backup.sh 1.2.3.4
+echo com.spocky.projengmenu >> "$FAKE/packages.txt"
+run ./03_launcher_wechsel.sh 1.2.3.4; grep -qx com.google.android.tvlauncher "$FAKE/disabled.txt" && ko "Stock-Launcher aus ohne HOME-Ersatz" || ok "verweigert"
+echo "T13 Launcher-Wechsel mit Projectivy"; echo com.spocky.projengmenu >> "$FAKE/homes.txt"
+run ./03_launcher_wechsel.sh 1.2.3.4; grep -q "HOME jetzt: com.spocky.projengmenu" "$W/out.txt" && ok "HOME = Projectivy" || { ko "HOME falsch"; tail -3 "$W/out.txt"; }
+grep -q "en com.google.android.tvlauncher" "$D/state/rollback_launcher.sh" && ok "Rollback vorhanden" || ko "kein Rollback"
+run ./02_reboot_check.sh 1.2.3.4; grep -q "^OK" "$W/out.txt" && ok "Neustart-Check akzeptiert deaktivierten Stock-Launcher" || { ko "Check schlägt fehl"; tail -5 "$W/out.txt"; }
+run ./01_disable_batch.sh 1.2.3.4 batches/batch4_nur_mit_ersatzlauncher.txt; grep -qx com.google.android.tvrecommendations "$FAKE/disabled.txt" && ok "Batch 4 jetzt erlaubt" || ko "Batch 4 weiter gesperrt"
+( "$D/state/rollback_launcher.sh" 1.2.3.4 ) >/dev/null 2>&1; grep -qx com.google.android.tvlauncher "$FAKE/disabled.txt" && ko "Rollback wirkungslos" || ok "Rollback stellt Stock-Launcher her"
+echo "T14 Selbstschutz: HOME landet nicht beim Ersatz → sofort zurück"; setup; run ./00_backup.sh 1.2.3.4
+echo com.spocky.projengmenu >> "$FAKE/packages.txt"; echo com.spocky.projengmenu >> "$FAKE/homes.txt"; touch "$FAKE/refuse_home"
+run ./03_launcher_wechsel.sh 1.2.3.4; grep -q "automatisch wieder aktiviert" "$W/out.txt" && ok "Abbruch gemeldet" || ko "kein Abbruch"
+grep -qx com.google.android.tvlauncher "$FAKE/disabled.txt" && ko "Stock-Launcher blieb aus" || ok "Stock-Launcher sofort wieder an"
+
 echo "T11 Nie verbotene Befehle"
 [ ! -s "$FAKE/forbidden.log" ] && ok "kein uninstall/clear/hide aufgerufen" || ko "$(cat "$FAKE/forbidden.log")"
 grep -rnE 'pm (uninstall|clear|hide)|rm -rf' "$DEV"/*.sh && ko "verbotener Befehl im Code" || ok "kein uninstall/clear/hide/rm -rf im Code"

@@ -39,6 +39,8 @@ DIS="$(list_pkgs -d)"
 for p in $WANT_OFF; do grep -qx "$p" <<<"$DIS" || echo "Hinweis: $p hat sich beim Boot selbst wieder aktiviert (harmlos)"; done
 # Kein geschütztes Paket darf neu deaktiviert sein
 while read -r p; do
+  # Stock-Launcher darf aus sein, wenn ein anderer Launcher HOME ist (03_launcher_wechsel.sh)
+  if [[ " $STOCK_LAUNCHERS " == *" $p "* ]] && [ -n "$H" ] && [[ ! "$H" =~ $STOCK_HOME_RE ]]; then continue; fi
   is_hard_protected "$p" && ! grep -qx "$p" "$STATE/LATEST/disabled_ab_werk.txt" && { warn "Geschütztes Paket deaktiviert: $p"; fail=1; }
 done <<<"$DIS"
 CR="$(sh_ logcat -d -t 3000 | grep -A1 'FATAL EXCEPTION' | grep -oE 'Process: [^,]+' | sort | uniq -c || true)"
