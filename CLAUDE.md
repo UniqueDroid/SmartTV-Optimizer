@@ -15,7 +15,8 @@ Repo für vorsichtiges, vollständig reversibles Debloating von Android-TV-Gerä
 ## Aktueller Stand (2026-11-08)
 - Projectivy Launcher (`com.spocky.projengmenu`) installiert.
 - `03_launcher_wechsel.sh`: HOME = Projectivy sofort ok, **nach Neustart war tvlauncher wieder aktiv**. Ursache offen → `docs/home-taste-launcher.md`, Abschnitt „Befund“.
-- Batches 1–5 vorbereitet; ob/welche schon gelaufen sind, steht in `devices/philips-50PUS7354/state/` (rollback_*.sh, LAST_BATCH).
+- Batch 5 (Tuner/playtv) ist **gesperrt/auskommentiert**: Aussage unbelegt, Bootaufrufer unbekannt → `docs/tuner-playtv-pruefung.md`. Nicht aktivieren, bevor der Aufrufer ermittelt ist und Jan zustimmt.
+- Batches 1–4 vorbereitet; ob/welche schon gelaufen sind, steht in `devices/philips-50PUS7354/state/` (rollback_*.sh, LAST_BATCH).
 
 ## Nächste Aufgabe
 1. `state/rollback_events.log` prüfen: Hat ein Auto-Rollback von `02_reboot_check.sh` tvlauncher wieder eingeschaltet? Falls ja → Ursache gefunden, Lösung B mit neuem Timeout (600 s) wiederholen.

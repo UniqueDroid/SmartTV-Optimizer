@@ -21,14 +21,10 @@
 | 2b Extras | nettvapps, sticker, dropboxprovider, Web-App-Kacheln nettvappNNNN (nach Backup) | Nach Rücksprache | 50PUS7354, 2 Neustarts |
 | 3 Apps | Google TV Filme, Play Musik, YouTube Music, Play Games, Play-Fi softap; optional DLNA, Alexa, TalkBack, Assistant | Nach Rücksprache | mehrere Geräte |
 | 4 tvrecommendations | nur wenn Ersatz-Launcher HOME **und** Stock-Launcher aus – derzeit nicht geplant | Kritisch | – |
-| 5 Tuner | org.droidtv.playtv, danach ggf. Installer/Videotext; nur `ALLOW_TUNER=1` | Kritisch | 1 Tester |
+| 5 Tuner | org.droidtv.playtv u. a. – **auskommentiert**, siehe [tuner-playtv-pruefung.md](tuner-playtv-pruefung.md) | Kritisch | unbelegt (1 Commit ohne Testprotokoll) |
 
-## Tuner (Korrektur 2026-11-08)
-Frühere Annahme „playtv steuert auch HDMI“ war zu vorsichtig: Laut cleanyourtv (TPM191E) läuft die HDMI-Umschaltung über `org.droidtv.channels` (bleibt hart geschützt). Das Deaktivieren von `org.droidtv.playtv` soll die „Kein Signal“-Falle beim Einschalten beseitigen – getestet von nur einem Tester. Daher:
-1. Erst Batches 1–3, jeweils mit Neustart-Check.
-2. Dann Batch 5 mit nur `playtv`, Neustart-Check, mehrere Tage nutzen.
-3. Installer/Videotext nur bei Bedarf.
-Ein Bootschleifen-Risiko ist gering (App ohne PERSISTENT-Flag, kein TV-Eingangs-Anbieter – das Skript prüft beides vor dem Deaktivieren), aber nicht null. Alternative ohne Eingriff: Projectivy Launcher mit waipu.tv-Autostart.
+## Tuner (Prüfung 2026-11-08)
+Die Aussage „playtv deaktivieren beseitigt ‚Kein Signal‘“ stammt aus einem einzigen Commit ohne Testprotokoll und wurde von den Maintainern auskommentiert. Dass der TV danach direkt in den Home-Screen bootet, behauptet die Quelle gar nicht. Offen ist außerdem, welcher Dienst playtv beim Boot startet und ob er einen Fehlstart verkraftet. **Batch 5 ist deshalb gesperrt (auskommentiert).** Details und Prüfschritte: [tuner-playtv-pruefung.md](tuner-playtv-pruefung.md).
 
 ## Nie deaktivieren (hart, Skript bricht ab)
 `android`, `com.android.*`, GMS/GSF/WebView/Setup/Launcher/Tastatur, `com.mediatek.*`, `org.droidtv.{tvserver,channels,eum,fastip,philipstvdrawer,nettvbrowser,menudataapp,nettvregistration,tvsystemui,icp,oad,settings,tv.*,nettv_launcherapp}`, `com.easy.oad`, HbbTV-Engines (vewd/seraphic), `com.phorus.playfi.tv`, Chromecast, waipu.tv, YouTube, Netflix, Prime Video, Disney+, Twitch, alles mit bluetooth/wifi/remote/hdmi/launcher/settings/keyboard im Namen.

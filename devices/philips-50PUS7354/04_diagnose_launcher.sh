@@ -23,7 +23,7 @@ collect(){ # $1 = Präfix
   sh_ settings get secure enabled_accessibility_services   > "$O/${x}_accessibility.txt"
   sh_ logcat -d                                            > "$O/${x}_logcat_main.txt"
   sh_ logcat -b events -d                                  > "$O/${x}_logcat_events.txt"
-  grep -iE 'tvlauncher|setEnabledSetting|setApplicationEnabledSetting|COMPONENT_ENABLED|PACKAGE_CHANGED|new state: enabled|Force stopping com\.google\.android\.tvlauncher|setupwraith|tungsten' \
+  grep -iE 'tvlauncher|setEnabledSetting|setApplicationEnabledSetting|COMPONENT_ENABLED|PACKAGE_CHANGED|new state: enabled|Force stopping com\.google\.android\.tvlauncher|setupwraith|tungsten|playtv|PlayTv' \
     "$O/${x}_logcat_main.txt" "$O/${x}_logcat_events.txt" > "$O/${x}_logcat_filter.txt" || true
 }
 

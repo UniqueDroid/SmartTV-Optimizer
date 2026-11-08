@@ -44,4 +44,5 @@ Bash unter Linux, macOS oder WSL; `adb` im PATH. Die Ordner unter `state/` (Back
 - [Optimierungsplan Philips 50PUS7354](docs/optimierungsplan-philips-50PUS7354.md)
 - [CLAUDE.md – Regeln & nächste Aufgabe für Claude](CLAUDE.md)
 - [Home-Taste öffnet Stock-Launcher](docs/home-taste-launcher.md)
+- [Prüfung Tuner/playtv (Batch 5)](docs/tuner-playtv-pruefung.md)
 - [Repo-Recherche Philips TPM191E](docs/repo-recherche-philips-50PUS7354.md)

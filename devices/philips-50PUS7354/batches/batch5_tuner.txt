@@ -1,10 +1,16 @@
-# Batch 5 – Antennen-/Kabel-/Sat-Tuner  [Kritisch – nur mit ALLOW_TUNER=1]
-# Für reine Streaming-Nutzung (waipu.tv) ohne Antenne. Laut cleanyourtv (TPM191E) beseitigt das die
-# "Kein Signal"-Falle beim Einschalten und auf der TV-Taste; HDMI-Umschaltung läuft über
-# org.droidtv.channels und bleibt. Evidenz: EIN Tester – deshalb als letzter Schritt, einzeln, mit Neustart-Check.
+# Batch 5 – Antennen-/Kabel-/Sat-Tuner  [Kritisch – UNBELEGT, derzeit NICHT ausführen]
+# Nur mit ALLOW_TUNER=1. Stand der Prüfung 2026-11-08 (docs/tuner-playtv-pruefung.md):
+#  - Quelle: ein einzelner Commit (cleanyourtv deadc0a9, 2026-11-03, ein Beitragender), wortgleich in zwei
+#    Gerätelisten eingefügt, ohne Testprotokoll (kein Gerät, keine Neustarts, keine Logs). Die Maintainer haben
+#    die Zeilen danach auskommentiert ("Left as comments … The tester had them off").
+#  - Behauptet wird nur: keine "Kein Signal"-Falle mehr, HDMI-Umschaltung bleibt. NICHT behauptet und nicht
+#    belegt: dass der TV danach direkt in den Home-Screen bootet.
+#  - Offenes Bootrisiko: Wer playtv beim Boot startet, ist unbekannt. Ist der Aufrufer ein dauerhaft
+#    laufender Systemdienst, der mit dem Fehlstart nicht umgehen kann, sind Absturzschleifen denkbar.
+#    Vorher mit ./04_diagnose_launcher.sh <TV-IP> (nur lesen) den Aufrufer ermitteln (playtv-Zeilen in
+#    *_logcat_filter.txt, "START u0 … org.droidtv.playtv … from uid …").
 # Danach gehen Live-TV per Antenne, Sendersuche und Videotext nicht mehr (Rückweg: rollback_batch5_tuner.sh).
-# Reihenfolge: zuerst nur playtv testen, die Installer erst danach.
-org.droidtv.playtv                        # Live-TV/Tuner-Oberfläche
+# org.droidtv.playtv                      # Live-TV/Tuner-Oberfläche – auskommentiert bis zur Klärung
 # org.droidtv.euinstallertc               # DVB-T/C-Sendersuche
 # org.droidtv.euinstallersat              # DVB-S-Sendersuche
 # org.droidtv.teletext                    # Videotext

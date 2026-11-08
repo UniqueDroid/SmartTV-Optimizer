@@ -78,7 +78,8 @@ for f in "$D"/batches/*.txt; do grep -vE '^[[:space:]]*(#|$)' "$f" | awk '{print
 echo "T5 Tuner nur mit ALLOW_TUNER=1"; setup; run ./00_backup.sh 1.2.3.4
 run ./01_disable_batch.sh 1.2.3.4 batches/batch5_tuner.txt; grep -qx org.droidtv.playtv "$FAKE/disabled.txt" && ko "Tuner ohne Freigabe aus" || ok "ohne Freigabe verweigert"
 echo org.droidtv.playtv > "$W/y.txt"; run ./01_disable_batch.sh 1.2.3.4 "$W/y.txt"; grep -qx org.droidtv.playtv "$FAKE/disabled.txt" && ko "Tuner über anderen Batch aus" || ok "Tuner in anderem Batch verweigert"
-( cd "$D" && YES=1 ALLOW_TUNER=1 ./01_disable_batch.sh 1.2.3.4 batches/batch5_tuner.txt ) >/dev/null 2>&1; grep -qx org.droidtv.playtv "$FAKE/disabled.txt" && ok "mit Freigabe möglich" || ko "mit Freigabe nicht möglich"
+echo org.droidtv.playtv > "$W/batch5_test.txt"; ( cd "$D" && YES=1 ALLOW_TUNER=1 ./01_disable_batch.sh 1.2.3.4 "$W/batch5_test.txt" ) >/dev/null 2>&1; grep -qx org.droidtv.playtv "$FAKE/disabled.txt" && ok "mit Freigabe möglich" || ko "mit Freigabe nicht möglich"
+run ./01_disable_batch.sh 1.2.3.4 batches/batch5_tuner.txt; grep -q "keine aktiven Zeilen" "$W/out.txt" && ok "Repo-Batch 5 ist auskommentiert" || ko "Batch 5 enthält aktive Zeilen"
 
 echo "T6 Batch 4 gesperrt solange Stock-Launcher aktiv"; setup; run ./00_backup.sh 1.2.3.4
 run ./01_disable_batch.sh 1.2.3.4 batches/batch4_nur_mit_ersatzlauncher.txt; grep -qx com.google.android.tvrecommendations "$FAKE/disabled.txt" && ko "Batch 4 lief" || ok "verweigert"
