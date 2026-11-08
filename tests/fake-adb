@@ -6,7 +6,9 @@ case "$1" in
   connect) echo "connected"; exit 0;;
   wait-for-device) exit 0;;
   get-state) [ -f "$F/offline" ] && exit 1; echo device; exit 0;;
-  reboot) [ -f "$F/bootloop_after_reboot" ] && echo 0 > "$F/boot"; exit 0;;
+  reboot) [ -f "$F/bootloop_after_reboot" ] && echo 0 > "$F/boot"
+          if [ -f "$F/reenable_at_boot" ]; then grep -vxFf "$F/reenable_at_boot" "$F/disabled.txt" > "$F/d.tmp" || true; mv "$F/d.tmp" "$F/disabled.txt"; fi
+          exit 0;;
   shell) shift;;
   *) exit 1;;
 esac
@@ -34,7 +36,9 @@ case "$cmd" in
      else n="$(grep -vxFf "$F/disabled.txt" "$F/homes.txt" | grep -v '^com.android.tv.settings$' | head -1)"
           [ -n "$n" ] && echo "$n/.Home" || echo "com.android.tv.settings/.FallbackHome"; fi;;
   "input keyevent"*) : ;;
-  "dumpsys package "*) p="${cmd##* }"; grep -qx "$p" "$F/persistent.txt" 2>/dev/null && echo "    pkgFlags=[ SYSTEM PERSISTENT ]" || echo "    pkgFlags=[ SYSTEM ]";;
+  "dumpsys package "*) p="${cmd##* }"; grep -qx "$p" "$F/persistent.txt" 2>/dev/null && echo "    pkgFlags=[ SYSTEM PERSISTENT ]" || echo "    pkgFlags=[ SYSTEM ]"
+     grep -qx "$p" "$F/disabled.txt" && e=3 || e=0; echo "    User 0: installed=true hidden=false stopped=false enabled=$e";;
+  "settings get secure enabled_accessibility_services") echo null;;
   "dumpsys tv_input") for i in 1 2 3 4; do echo "  HDMI$i inputId=x/HW$i"; done;;
   "settings list"*) echo "a=1";;
   "logcat"*) : ;;

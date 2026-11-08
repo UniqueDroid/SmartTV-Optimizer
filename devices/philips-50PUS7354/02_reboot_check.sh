@@ -7,7 +7,7 @@ init_device "${1:-}"
 LAST="$(cat "$STATE/LAST_BATCH" 2>/dev/null || true)"; RB="$STATE/rollback_${LAST}.sh"
 WANT_OFF="$(grep -oE '^en [^ ]+' "$RB" 2>/dev/null | cut -d' ' -f2 || true)"
 HDMI_BEFORE="$(hdmi_count)"
-TO="${BOOT_TIMEOUT:-300}"
+TO="${BOOT_TIMEOUT:-600}"   # TPM191E bootet langsam; 300 s waren zu knapp (Fehlauslösung möglich)
 
 echo "Neustart …"; adb -s "$SERIAL" reboot </dev/null || true; sleep 20
 ok=0; t=0
@@ -19,9 +19,20 @@ done
 
 if [ "$ok" != 1 ]; then
   if [ "$(adb -s "$SERIAL" get-state </dev/null 2>/dev/null)" = device ] && [ -x "$RB" ]; then
-    warn "Boot nicht abgeschlossen nach ${TO}s – rolle '$LAST' automatisch zurück."
-    "$RB" "$SERIAL"; adb -s "$SERIAL" reboot </dev/null || true
-    die "Rollback ausgeführt, TV startet neu. Bitte melden, welcher Batch das war."
+    warn "Boot nicht abgeschlossen nach ${TO}s (ADB antwortet aber)."
+    do_rb=1
+    # Interaktiv: nachfragen (Standard nach 120 s ohne Antwort: Rollback). Ohne Terminal: Rollback.
+    if [ -t 0 ] && [ "${AUTO_ROLLBACK:-ask}" = ask ]; then
+      a=""; read -r -t 120 -p "Batch '$LAST' zurückrollen? [J/n] (TV-Bild prüfen!) " a </dev/tty || true
+      [[ "$a" =~ ^[nN] ]] && do_rb=0
+    fi
+    [ "${AUTO_ROLLBACK:-ask}" = 0 ] && do_rb=0
+    if [ "$do_rb" = 1 ]; then
+      echo "$(date '+%F %T') AUTO-ROLLBACK $LAST (boot_completed nach ${TO}s nicht erreicht)" >> "$STATE/rollback_events.log"
+      "$RB" "$SERIAL"; adb -s "$SERIAL" reboot </dev/null || true
+      die "Rollback ausgeführt (siehe state/rollback_events.log), TV startet neu."
+    fi
+    die "Kein Rollback gewählt. Manuell: $RB $SERIAL"
   fi
   die "TV nicht per ADB erreichbar. Siehe README → Notfall (Werksreset hebt alle disable-user-Änderungen auf)."
 fi

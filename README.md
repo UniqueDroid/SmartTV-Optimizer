@@ -24,6 +24,7 @@ cd devices/philips-50PUS7354
 ./01_disable_batch.sh 192.168.1.50 batches/batch1_telemetrie.txt
 ./02_reboot_check.sh 192.168.1.50                             # Neustart + Prüfung
 ./03_launcher_wechsel.sh 192.168.1.50                         # Home-Taste → Projectivy (Stock-Launcher deaktivieren)
+./04_diagnose_launcher.sh 192.168.1.50 [--reboot-test]        # Wer schaltet tvlauncher beim Boot ein?
 # bei Problemen:
 ./state/rollback_batch1_telemetrie.sh 192.168.1.50            # nur dieser Batch
 ./state/rollback_all.sh 192.168.1.50                          # alles von uns Deaktivierte
@@ -41,5 +42,6 @@ Bash unter Linux, macOS oder WSL; `adb` im PATH. Die Ordner unter `state/` (Back
 
 ## Dokumentation
 - [Optimierungsplan Philips 50PUS7354](docs/optimierungsplan-philips-50PUS7354.md)
+- [CLAUDE.md – Regeln & nächste Aufgabe für Claude](CLAUDE.md)
 - [Home-Taste öffnet Stock-Launcher](docs/home-taste-launcher.md)
 - [Repo-Recherche Philips TPM191E](docs/repo-recherche-philips-50PUS7354.md)

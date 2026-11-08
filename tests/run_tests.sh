@@ -97,6 +97,7 @@ echo "T9 Bootschleife nach Neustart → automatischer Rollback"; setup; run ./00
 run ./01_disable_batch.sh 1.2.3.4 batches/batch2_promo.txt; touch "$FAKE/bootloop_after_reboot"
 run ./02_reboot_check.sh 1.2.3.4; grep -q "Rollback ausgeführt" "$W/out.txt" && ok "Rollback ausgelöst" || { ko "kein Rollback"; tail -5 "$W/out.txt"; }
 grep -qx org.droidtv.nettv.market "$FAKE/disabled.txt" && ko "Batch nicht zurückgerollt" || ok "Batch zurückgerollt"
+grep -q AUTO-ROLLBACK "$D/state/rollback_events.log" && ok "Auto-Rollback protokolliert" || ko "nicht protokolliert"
 
 echo "T10 Normaler Neustart-Check"; setup; run ./00_backup.sh 1.2.3.4; run ./01_disable_batch.sh 1.2.3.4 batches/batch1_telemetrie.txt
 run ./02_reboot_check.sh 1.2.3.4; grep -q "^OK" "$W/out.txt" && ok "Check OK" || { ko "Check fehlgeschlagen"; tail -8 "$W/out.txt"; }
@@ -114,6 +115,18 @@ echo "T14 Selbstschutz: HOME landet nicht beim Ersatz → sofort zurück"; setup
 echo com.spocky.projengmenu >> "$FAKE/packages.txt"; echo com.spocky.projengmenu >> "$FAKE/homes.txt"; touch "$FAKE/refuse_home"
 run ./03_launcher_wechsel.sh 1.2.3.4; grep -q "automatisch wieder aktiviert" "$W/out.txt" && ok "Abbruch gemeldet" || ko "kein Abbruch"
 grep -qx com.google.android.tvlauncher "$FAKE/disabled.txt" && ko "Stock-Launcher blieb aus" || ok "Stock-Launcher sofort wieder an"
+
+echo "T15 Diagnose ohne Parameter ändert nichts"; setup; run ./00_backup.sh 1.2.3.4
+before="$(cat "$FAKE/disabled.txt")"; run ./04_diagnose_launcher.sh 1.2.3.4
+[ "$(cat "$FAKE/disabled.txt")" = "$before" ] && ok "Zustand unverändert" || ko "Zustand verändert"
+ls "$D"/state/diagnose_*/summary.txt >/dev/null 2>&1 && ok "summary.txt erzeugt" || ko "keine Zusammenfassung"
+grep -q "pm disable\|pm enable" "$FAKE/calls.log" && ko "ändernder Befehl im Lesemodus" || ok "kein ändernder Befehl"
+
+echo "T16 Reboot-Test erkennt Reaktivierung beim Boot"; setup; run ./00_backup.sh 1.2.3.4
+echo com.spocky.projengmenu >> "$FAKE/packages.txt"; echo com.spocky.projengmenu >> "$FAKE/homes.txt"; echo com.google.android.tvlauncher > "$FAKE/reenable_at_boot"
+run ./04_diagnose_launcher.sh 1.2.3.4 --reboot-test
+grep -A1 "Nach dem Boot wieder eingeschaltet" "$W/out.txt" | grep -q tvlauncher && ok "Reaktivierung erkannt" || { ko "nicht erkannt"; tail -20 "$W/out.txt"; }
+grep -q "en com.google.android.tvlauncher" "$D/state/rollback_launcher.sh" && ok "Rollback vorab geschrieben" || ko "kein Rollback"
 
 echo "T11 Nie verbotene Befehle"
 [ ! -s "$FAKE/forbidden.log" ] && ok "kein uninstall/clear/hide aufgerufen" || ko "$(cat "$FAKE/forbidden.log")"

@@ -42,7 +42,7 @@ Ein Bootschleifen-Risiko ist gering (App ohne PERSISTENT-Flag, kein TV-Eingangs-
 ## Offen
 - Wortlaut der wiederkehrenden Meldung (Vermutung: „Kein Signal/keine Sender“ durch Boot in playtv)
 - Google Assistant, Alexa, DLNA behalten?
-- Projectivy ist installiert (2026-11-08); Home-Taste öffnet noch den Stock-Launcher → siehe [home-taste-launcher.md](home-taste-launcher.md), Lösung B mit `03_launcher_wechsel.sh`
+- Projectivy ist installiert (2026-11-08). Lösung B (Stock-Launcher deaktivieren) wirkte sofort, aber `tvlauncher` war nach dem Neustart wieder aktiv → Diagnose mit `04_diagnose_launcher.sh`, Übergang Lösung A. Details: [home-taste-launcher.md](home-taste-launcher.md)
 
 ## Quellen
 - Gathin23/cleanyourtv – `examples/philips-tpm191e/debloat.txt` (10 Geräte, u. a. 50PUS7354 Frankreich und 65PUS7354)

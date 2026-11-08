@@ -19,8 +19,26 @@ Nachteile, gerade auf dieser Plattform:
 - Auf einem 55PUS9435 (gleiche Plattform/Firmware) hing mit aktivem Projectivy-Bedienungshilfedienst die **Zurück-Taste zeitweise in Philips-Menüs** (Einstellungen, Quellen), jeder Tastendruck kam **100–300 ms verzögert**, und gehaltenes Lautstärke-Hoch/Runter wiederholte nicht mehr (cleanyourtv, TROUBLESHOOTING).
 - Der Override hält laut Nutzerberichten nicht immer über einen Neustart; kurz blitzt der Stock-Launcher auf.
 
-### B) Stock-Launcher deaktivieren (empfohlen, reversibel)
-`pm disable-user --user 0 com.google.android.tvlauncher` – nicht deinstallieren. Auf mindestens neun TPM191E-Geräten (darunter ein 50PUS7354) übernahm der neue Launcher die Home-Taste **sofort** nach dem Deaktivieren und behielt sie über mehrere Neustarts (cleanyourtv `examples/philips-tpm191e`). Dann ist auch kein Bedienungshilfedienst nötig – Lösung A wieder ausschalten.
+## ⚠ Befund auf Jans 50PUS7354 (2026-11-08)
+Lösung B wirkte **sofort** (HOME = Projectivy), aber **nach dem Neustart war `tvlauncher` wieder aktiv** und HOME zeigte wieder auf ihn. Die Erfahrung „hält über mehrere Neustarts“ der anderen Geräte trifft hier (noch) nicht zu. Ursache offen – mögliche Erklärungen, in dieser Reihenfolge prüfen:
+
+1. **Eigenes Skript:** `02_reboot_check.sh` rollte bis Commit `cc398dd` den letzten Schritt automatisch zurück, wenn der Boot länger als 300 s dauerte – beim Launcher-Wechsel hieße das `tvlauncher` wieder an. Seitdem: Timeout 600 s, interaktive Rückfrage, jeder Auto-Rollback steht in `state/rollback_events.log`.
+2. **Ein Dienst schaltet ihn beim Boot aktiv ein** (User-0-Zustand `enabled=1`, Verursacher im Boot-Log; Kandidaten: `setupwraith`/`tungsten`, Philips-Dienste).
+3. **Firmware verwirft Benutzer-Deaktivierungen** (dann sind *alle* `disable-user`-Pakete nach dem Boot wieder an → Konzept „nur deaktivieren“ hält auf diesem Gerät generell nicht).
+4. **Andere Firmware** als `STT2.230526.001` → Community-Erfahrungen nicht übertragbar.
+
+Diagnose (`devices/philips-50PUS7354/04_diagnose_launcher.sh`):
+```bash
+./04_diagnose_launcher.sh <TV-IP>                 # nur lesen
+./04_diagnose_launcher.sh <TV-IP> --reboot-test   # deaktivieren → Neustart → Boot-Log sammeln
+cat state/diagnose_*/summary.txt
+```
+`summary.txt` enthält Firmware, HOME, User-0-Zustand (`enabled=` 0 Standard · 1 aktiv eingeschaltet · 3 disabled-user), welche Pakete nach dem Boot wieder an sind, Auto-Rollbacks und Log-Treffer. Volle Logs liegen daneben (`*_logcat_main.txt`, `*_logcat_events.txt`).
+
+Bis zur Klärung: **Lösung A** als Übergang testen – vorher `./state/rollback_launcher.sh <TV-IP>`, damit nicht zwei Mechanismen gleichzeitig wirken.
+
+### B) Stock-Launcher deaktivieren (reversibel – auf Jans Gerät bisher nicht neustartfest, siehe Befund)
+`pm disable-user --user 0 com.google.android.tvlauncher` – nicht deinstallieren. Auf mindestens neun anderen TPM191E-Geräten (darunter ein 50PUS7354) übernahm der neue Launcher die Home-Taste **sofort** nach dem Deaktivieren und behielt sie über mehrere Neustarts (cleanyourtv `examples/philips-tpm191e`). Dann ist auch kein Bedienungshilfedienst nötig – Lösung A wieder ausschalten.
 
 Erlaubt nach Projektregel 4 erst, wenn der Ersatz installiert, geöffnet und getestet ist. Das Skript `devices/philips-50PUS7354/03_launcher_wechsel.sh`:
 - prüft Backup, dass Projectivy installiert, aktiv und **als HOME-Handler gemeldet** ist (sonst Abbruch – kein schwarzer Bildschirm),
